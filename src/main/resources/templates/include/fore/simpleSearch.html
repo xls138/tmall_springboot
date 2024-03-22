@@ -1,0 +1,21 @@
+<div class th:fragment="html">
+    <a th:href="${application.contextPath}">
+        <img id="simpleLogo" class="simpleLogo" src="img/site/simpleLogo.png">
+    </a>
+    <form action="search" method="get">
+        <div class="simpleSearchDiv pull-right">
+            <input type="text" placeholder="搜索" name="keyword">
+            <button class="searchButton" type="submit">搜鼎晟</button>
+            <div class="searchBelow">
+                <!--在搜索栏下方，有一个 div（class="searchBelow"），其中包含了一些商品类别的链接。这些链接是通过 Thymeleaf 的循环指令 th:each 动态生成的，它遍历一个名为 categories_below_search 的列表。-->
+				<span th:each="c,status: ${application.categories_below_search}"
+                      th:if="${status.index>=7 && status.index<=10}">
+                    <!--每个类别的名称通过 th:text="${c.name}" 动态显示，链接的目标地址通过 th:href 动态设置-->
+					<a th:href="@{'category?cid='+${c.id}}" th:text="${c.name}"></a>
+					<span th:if="${status.index!=10}">|</span>
+	            </span>
+            </div>
+        </div>
+    </form>
+    <div style="clear:both"></div>
+</div>

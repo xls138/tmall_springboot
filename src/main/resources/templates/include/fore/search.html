@@ -1,0 +1,22 @@
+<div class th:fragment="html">
+<!--    <a th:href="${application.contextPath}">-->
+        <img id="logo" src="img/site/logo.png" class="logo">
+<!--    </a>-->
+    <form action="search" method="get">
+        <div class="searchDiv">
+            <input name="keyword" type="text" placeholder="鼎晟搜索">
+            <button type="submit" class="searchButton">搜索</button>
+            <div class="searchBelow">
+				<span th:each="c,status: ${application.categories_below_search}"
+                      th:if="${status.index>=5 && status.index<=8}">
+					<a th:href="@{'category?cid='+${c.id}}" th:text="${c.name}"></a>
+					<span th:if="${status.index!=8}">|</span>
+	            </span>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<!--这个模板片段显示了一个搜索栏，用户可以在其中输入关键词进行搜索。
+下面还有一些分类链接，这些链接通过循环从后端传递的categories_below_search集合中获取，并且只显示了索引在5到8之间的分类。-->
