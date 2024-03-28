@@ -23,6 +23,7 @@ public class CategoryController {
 
     @GetMapping("/categories")
     public Page4Navigator<Category> list(@RequestParam(value = "start", defaultValue = "0") int start, @RequestParam(value = "size", defaultValue = "5") int size) throws Exception {
+        //start表示从第几页开始，size表示每页显示的数量。默认值分别是0和5。
         start = start < 0 ? 0 : start;
         Page4Navigator<Category> page = categoryService.list(start, size, 5);  //5表示导航分页最多有5个，像 [1,2,3,4,5] 这样
         return page;
@@ -37,12 +38,18 @@ public class CategoryController {
 
     public void saveOrUpdateImageFile(Category bean, MultipartFile image, HttpServletRequest request)
             throws IOException {
+        //这一行代码创建了一个File对象，它代表了服务器上用于存储分类图片的文件夹
         File imageFolder = new File(request.getServletContext().getRealPath("img/category"));
+        //加上.jpg后缀
         File file = new File(imageFolder, bean.getId() + ".jpg");
         if (!file.getParentFile().exists())
+            //如果父文件夹不存在，就创建父文件夹
             file.getParentFile().mkdirs();
+        //通过transferTo()方法，把浏览器传递过来的图片保存在上述指定的位置
         image.transferTo(file);
+        //通过ImageUtil.change2jpg(file)确保图片格式一定是jpg，而不仅仅是后缀名是.jpg
         BufferedImage img = ImageUtil.change2jpg(file);
+        //写入图片
         ImageIO.write(img, "jpg", file);
     }
 
@@ -57,11 +64,13 @@ public class CategoryController {
 
     @GetMapping("/categories/{id}")
     public Category get(@PathVariable("id") int id) throws Exception {
+        //bean是一个局部变量，用来存储获取到的Category对象
         Category bean = categoryService.get(id);
         return bean;
     }
 
     @PutMapping("/categories/{id}")
+    //分类信息、图片文件和请求信息
     public Object update(Category bean, MultipartFile image, HttpServletRequest request) throws Exception {
         String name = request.getParameter("name");
         bean.setName(name);

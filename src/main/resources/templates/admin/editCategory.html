@@ -18,14 +18,14 @@
             el: '#workingArea',
             data: data4Vue,
             mounted: function () { //mounted　表示这个 Vue 对象加载成功了
-                this.get();
+                this.get();//当Vue实例挂载完成后会执行this.get()方法来获取当前分类的信息
             },
             methods: {
                 get: function () {
                     var id = getUrlParms("id");
                     var url = this.uri + "/" + id;
                     axios.get(url).then(function (response) {
-                        vue.bean = response.data;
+                        vue.bean = response.data;//将响应的数据赋值给vue.bean
                     })
                 },
                 update: function () {
@@ -37,8 +37,9 @@
                     var formData = new FormData();
                     formData.append("image", this.file);
                     formData.append("name", this.bean.name);
+                    //按照 REST规范，增加是 POST,修改是 PUT
                     axios.put(url, formData).then(function (response) {
-                        location.href = vue.listURL;
+                        location.href = vue.listURL;//修改成功后，跳转到列表页面
                     });
                 },
                 getFile: function (event) {
@@ -62,11 +63,14 @@
             <table class="editTable">
                 <tr>
                     <td>分类名称</td>
+                    <!--Vue的指令，实现双向数据绑定，自动同步输入框的值和Vue实例中bean.name的值，并去除首尾空格-->
+                    <!--@keyup.enter="update" 表示按回车键时触发update方法-->
                     <td><input @keyup.enter="update" v-model.trim="bean.name" type="text" class="form-control"></td>
                 </tr>
                 <tr>
                     <td>分类图片</td>
                     <td>
+                        <!--Vue的指令，监听文件选择框的变化事件，当用户选择文件时调用getFile方法，$event是DOM原生事件对象-->
                         <input id="categoryPic" accept="image/*" type="file" name="image" @change="getFile($event)"/>
                     </td>
                 </tr>

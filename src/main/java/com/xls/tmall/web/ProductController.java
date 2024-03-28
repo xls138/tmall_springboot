@@ -14,6 +14,7 @@ import java.util.Date;
  
 @RestController
 public class ProductController {
+    //通过自动装配（@Autowired），它注入了 ProductService 和 CategoryService 以便在请求处理方法中使用。
 	@Autowired ProductService productService;
 	@Autowired CategoryService categoryService;
 	@Autowired ProductImageService productImageService;
@@ -22,7 +23,7 @@ public class ProductController {
     public Page4Navigator<Product> list(@PathVariable("cid") int cid, @RequestParam(value = "start", defaultValue = "0") int start, @RequestParam(value = "size", defaultValue = "5") int size) throws Exception {
     	start = start<0?0:start;
     	Page4Navigator<Product> page =productService.list(cid, start, size,5 );
-
+    	//为每个产品设置首张图片
         productImageService.setFirstProductImages(page.getContent());
 
     	return page;

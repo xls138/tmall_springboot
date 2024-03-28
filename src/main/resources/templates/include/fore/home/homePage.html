@@ -1,3 +1,20 @@
+<!--homePage.html 本身做了如下事情：
+1. 首先加载Vue
+2. Vue加载成功之后调用 header.html 的 linkDefaultActions 函数，给一些特定超链加上事件。
+3. 然后调用load函数
+4. 在load函数中访问 forehome
+5. forehome 在ForeRESTController 中定义，其作用：
+5.1. 查询所有分类
+5.2. 为这些分类填充产品集合
+5.3. 为这些分类填充推荐产品集合
+5.4. 移除产品里的分类信息，以免出现重复递归
+5.5. 返回这个 categoreis集合，随即被转换为 json 数组
+6. vue 拿到这个json数组，把他放在 vue.categories属性上
+7. vue 就会通过本教程下面几个被包含的 html 中的代码， 把这些数据渲染在视图上
+8. 然后， 在vue.$nextTick 这个函数里，对那渲染出来的元素，加上监听。
+vue.$nextTick 的意思是表示渲染结束后，会被调用，相当于回调函数的概念。因为要等渲染结束之后，才来进行监听，否则他们都没有被创建出来。
+9. 加监听的函数叫做：homePageRegisterListeners().-->
+
 <div th:fragment="html">
     <script>
         //用于显示和隐藏特定类别的产品。这些函数通过改变CSS属性来改变类别和产品的视觉呈现

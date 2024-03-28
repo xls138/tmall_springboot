@@ -92,7 +92,10 @@ public class ForePageController {
 
     @GetMapping("/forelogout")
     public String logout() {
+        //这行代码通过Shiro的SecurityUtils工具类获取当前与执行者（通常是用户）关联的Subject对象。
+        //在Shiro中，Subject代表了当前正在执行操作的安全实体，通常与应用的用户对应。
         Subject subject = SecurityUtils.getSubject();
+        //是否已登录
         if (subject.isAuthenticated())
             subject.logout();
         return "redirect:home";

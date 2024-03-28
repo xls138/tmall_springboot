@@ -5,49 +5,54 @@
 <body>
 <div th:replace="include/admin/adminNavigator::html"></div>
 <script>
+    //是一个jQuery的ready事件，确保在DOM完全加载后执行里面的代码
     $(function () {
+        //通过一个自定义的函数getUrlParms获取URL中的cid参数，这个参数通常代表当前分类的ID
         var cid = getUrlParms("cid");
-        //用于存储属性列表(beans)、单个属性信息(bean)、分页信息(pagination)以及当前分类信息(category)
         var data4Vue = {
-            uri: 'properties',
-            beans: [],
-            bean: {id: 0, name: '', category: {id: 0}},
-            pagination: {},
-            category: ''
+            uri: 'properties',//用于构建API请求的URI部分
+            beans: [],//用于存储属性列表
+            bean: {id: 0, name: '', category: {id: 0}},//用于存储单个属性的信息，初始时是一个空对象
+            pagination: {},//用于存储分页信息
+            category: ''//用于存储当前分类的信息
         };
 
         //ViewModel
         var vue = new Vue({
             el: '#workingArea',
-            data: data4Vue,
-            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+            data: data4Vue,//这里将外部定义的data4Vue对象作为Vue实例的数据对象
+            mounted: function () { //mounted　表示这个 Vue 对象加载成功了,它会立即获取当前分类的信息并列出属性
                 this.getCategory(cid);
                 this.list(0);
             },
             methods: {
+                //这个方法用于获取指定分类的信息。它构建了一个URL，然后使用axios发送GET请求。请求成功后，它将响应数据赋值给Vue实例的category属性
                 getCategory: function (cid) {
                     var url = "categories/" + cid;
                     axios.get(url).then(function (response) {
                         vue.category = response.data;
                     })
                 },
+                //这个方法用于获取属性列表。它构建了一个URL，包含了分页的起始位置，然后使用axios发送GET请求。请求成功后，它将响应数据中的分页信息赋值给Vue实例的pagination属性，并将属性列表赋值给beans属性
                 list: function (start) {
                     var url = "categories/" + cid + "/" + this.uri + "?start=" + start;
                     axios.get(url).then(function (response) {
-                        vue.pagination = response.data;
-                        vue.beans = response.data.content;
+                        vue.pagination = response.data;//response.data是一个JSON对象，包含了分页信息
+                        vue.beans = response.data.content;//response.data.content是一个JSON数组，包含了属性列表
                     });
                 },
+                //这个方法用于添加一个新属性。它首先检查属性名称是否为空，然后构建URL并使用axios发送POST请求。请求成功后，它会重置bean对象为初始状态，并刷新属性列表。
                 add: function () {
                     if (!checkEmpty(this.bean.name, "属性名称"))
                         return;
                     var url = this.uri;
-                    this.bean.category.id = cid;
+                    this.bean.category.id = cid;//将当前分类的ID赋值给属性对象的category属性
                     axios.post(url, this.bean).then(function (response) {
                         vue.list(0);
                         vue.bean = {id: 0, name: '', category: {id: 0}};
                     });
                 },
+                //这个方法用于删除一个属性。它首先检查是否确认删除，然后构建URL并使用axios发送DELETE请求。请求成功后，如果响应数据不为空，则显示警告信息；如果为空，则刷新属性列表。
                 deleteBean: function (id) {
                     if (!checkDeleteLink())
                         return;
@@ -73,6 +78,7 @@
 </script>
 
 <div id="workingArea">
+    <!--在属性管理页面的页头，有一个面包屑导航,这个分类数据是通过 getCategory 获取到,然后通过 vue 展示出其名称以及对应超链-->
     <ol class="breadcrumb">
         <li><a href="admin_category_list">所有分类</a></li>
         <li><a :href="'admin_property_list?cid='+category.id">{{category.name}}</a></li>
@@ -90,6 +96,7 @@
             </tr>
             </thead>
             <tbody>
+            <!--v-for指令用于循环输出表格中的每一行，每一行对应一个属性对象-->
             <tr v-for="bean in beans ">
                 <td>{{bean.id}}</td>
                 <td>

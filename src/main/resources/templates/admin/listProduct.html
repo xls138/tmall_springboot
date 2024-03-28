@@ -5,11 +5,11 @@
 <div th:replace="include/admin/adminNavigator::html"></div>
 <script>
     $(function () {
-        var cid = getUrlParms("cid");
+        var cid = getUrlParms("cid");//从URL参数中获取的类别ID，用于后续的数据请求中指定类别
         var data4Vue = {
-            uri: 'products',
-            beans: [],
-            bean: {
+            uri: 'products',//用于构建API请求的URI部分
+            beans: [],//存储产品列表的数组
+            bean: {//用于新增产品的对象
                 id: 0,
                 name: '',
                 'subTitle': '',
@@ -18,25 +18,27 @@
                 'stock': 99,
                 category: {'id': 0}
             },
-            pagination: {},
-            category: ''
+            pagination: {},//存储分页信息
+            category: ''//存储当前类别对象
         };
 
         //ViewModel
         var vue = new Vue({
-            el: '#workingArea',
-            data: data4Vue,
+            el: '#workingArea',//指定Vue实例挂载的元素，这里是ID为workingArea的DOM元素
+            data: data4Vue,//指定Vue实例的数据对象
             mounted: function () { //mounted　表示这个 Vue 对象加载成功了
-                this.list(0);
-                this.getCategory(cid);
+                this.list(0);//在Vue对象加载成功后执行一次list方法，获取产品列表
+                this.getCategory(cid);//获取当前类别对象
             },
             methods: {
+                //使用Axios发送GET请求到"categories/" + cid，获取指定类别的数据，并更新vue.category
                 getCategory: function (cid) {
                     var url = "categories/" + cid;
                     axios.get(url).then(function (response) {
                         vue.category = response.data;
                     })
                 },
+                //根据类别ID和分页信息发送GET请求获取产品列表，并更新vue.pagination和vue.beans
                 list: function (start) {
                     var url = "categories/" + cid + "/" + this.uri + "?start=" + start;
                     axios.get(url).then(function (response) {
@@ -44,6 +46,7 @@
                         vue.beans = response.data.content;
                     });
                 },
+                //添加新产品的方法。首先进行输入验证，然后构建请求体，并通过Axios发送POST请求添加新产品。成功后刷新列表并重置bean对象
                 add: function () {
                     if (!checkEmpty(this.bean.name, "产品名称"))
                         return;
@@ -71,6 +74,7 @@
                         };
                     });
                 },
+                //根据产品ID发送DELETE请求删除产品，成功后刷新列表
                 deleteBean: function (id) {
                     if (!checkDeleteLink())
                         return;
@@ -82,6 +86,7 @@
                             vue.list(0);
                     });
                 },
+                //用于分页导航的方法，通常与分页组件一起使用，允许用户跳转到指定页码或通过输入页码直接跳转
                 jump: function (page) {
                     jump(page, vue); //定义在adminHeader.html 中
                 },

@@ -18,7 +18,7 @@
             el: '#workingArea',
             data: data4Vue,
             mounted: function () { //mounted　表示这个 Vue 对象加载成功了
-                this.get();
+                this.get();//调用 get 方法，根据 URL 中的 id 参数，获取产品信息
             },
             methods: {
                 get: function () {
@@ -34,7 +34,7 @@
                         return;
                     var url = this.uri;
                     axios.put(url, vue.bean).then(function (response) {
-                        location.href = vue.listURL + "?cid=" + vue.category.id;
+                        location.href = vue.listURL + "?cid=" + vue.category.id;//更新成功后，跳转到产品列表页面
                     });
                 }
             }

@@ -5,27 +5,30 @@
 <body>
 <div th:replace="include/admin/adminNavigator::html"></div>
 <script>
-    $(function () {
+    $(function () {//使用jQuery的ready函数，确保DOM加载完成后执行内部代码
         var data4Vue = {
-            uri: 'categories',
-            beans: [],
-            bean: {id: 0, name: ''},
-            pagination: {},
-            file: null
+            uri: 'categories',//定义了一个uri属性，用于存放请求的URL
+            beans: [],//定义了一个beans属性，用于存放从服务器获取的分类列表
+            bean: {id: 0, name: ''},//定义了一个bean属性，用于存放当前编辑的分类
+            pagination: {},//定义了一个pagination属性，用于存放分页信息
+            file: null//定义了一个file属性，用于存放上传的图片文件
         };
-
-        //ViewModel
         var vue = new Vue({
-            el: '#workingArea',
-            data: data4Vue,
-            mounted: function () { //mounted　表示这个 Vue 对象加载成功了
+            el: '#workingArea',//'#workingArea': 指定Vue实例的挂载点
+            data: data4Vue,//data4Vue: 将数据对象传递给Vue实例
+            mounted: function () { //生命周期钩子，当Vue实例挂载完成后调用this.list(0)方法来加载分类列表
                 this.list(0);
             },
+            //定义了一系列方法，包括列表展示(list)、添加分类(add)、删除分类(deleteBean)、获取文件(getFile)、分页跳转(jump和jumpByNumber)等
             methods: {
-                list: function (start) {
+                list: function (start) {//start: 传入的参数，用于指定从第几条数据开始查询
+                    //请从第start条数据开始给我送数据
                     var url = this.uri + "?start=" + start;
+                    //去这个网址帮我取数据
                     axios.get(url).then(function (response) {
+                        //分页信息，如总页数、当前页码
                         vue.pagination = response.data;
+                        //分类列表
                         vue.beans = response.data.content;
                     });
                 },
@@ -41,9 +44,13 @@
                     formData.append("image", this.file);
                     formData.append("name", this.bean.name);
                     axios.post(url, formData).then(function (response) {
+                        //在服务器成功添加了新分类后，我们调用list方法来刷新分类列表，参数0表示从第一条数据开始获取
                         vue.list(0);
+                        //清空bean对象，以便下次添加
                         vue.bean = {id: 0, name: '', hp: '0'};
+                        //这里使用了jQuery来清空文件输入框的值
                         $("#categoryPic").val('');
+                        //将file属性设置为null，表示当前没有选择的文件
                         vue.file = null;
                     });
                 },
@@ -60,6 +67,7 @@
                     });
                 },
                 getFile: function (event) {
+                    //将文件对象赋值给file属性
                     this.file = event.target.files[0];
                 },
                 jump: function (page) {
@@ -73,7 +81,7 @@
     });
 
 </script>
-<div id="workingArea">
+<div id="workingArea"><!--定义了一个工作区域，Vue.js会在这个区域内进行动态内容的渲染-->
     <h1 class="label label-info">分类管理</h1>
     <br>
     <br>

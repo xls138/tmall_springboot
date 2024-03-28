@@ -17,10 +17,13 @@ import javax.persistence.Transient;
 import org.springframework.data.elasticsearch.annotations.Document;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+//注解表明这是一个实体类
 @Entity
+//映射到数据库中名为 product 的表
 @Table(name = "product")
+//注解用于指示在序列化时应忽略的属性，这通常与Hibernate的懒加载机制有关
 @JsonIgnoreProperties({"handler", "hibernateLazyInitializer"})
+//注解表示这个实体类也用于Elasticsearch文档，该文档索引名为 tmall_springboot，类型为 product
 @Document(indexName = "tmall_springboot", type = "product")
 public class Product {
     @Id

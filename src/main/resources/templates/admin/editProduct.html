@@ -7,26 +7,26 @@
 <script>
     $(function () {
         var data4Vue = {
-            uri: 'products',
-            listURL: 'admin_product_list',
-            bean: '',
-            category: ''
+            uri: 'products',//用于构建 API 请求的基本 URI，这里设置为 'products'
+            listURL: 'admin_product_list',//用于构建列表页面的 URL，这里设置为 'admin_product_list'
+            bean: '',//用于存储当前产品的信息，初始时是一个空对象
+            category: ''//用于存储当前产品所属分类的信息
         };
 
         //ViewModel
         var vue = new Vue({
-            el: '#workingArea',
-            data: data4Vue,
+            el: '#workingArea',//这里的 #workingArea 是一个 div 元素的 ID，它是 Vue 实例的挂载点
+            data: data4Vue,//这里将外部定义的 data4Vue 对象作为 Vue 实例的数据对象
             mounted: function () { //mounted　表示这个 Vue 对象加载成功了
-                this.get();
+                this.get();//调用 get 方法，根据 URL 中的 id 参数，获取产品信息
             },
             methods: {
                 get: function () {
-                    var id = getUrlParms("id");
-                    var url = this.uri + "/" + id;
+                    var id = getUrlParms("id");//获取 URL 中的 id 参数
+                    var url = this.uri + "/" + id;//构建请求的 URL
                     axios.get(url).then(function (response) {
-                        vue.bean = response.data;
-                        vue.category = vue.bean.category;
+                        vue.bean = response.data;//将响应数据设置到 bean 属性
+                        vue.category = vue.bean.category;//将产品的分类信息设置到 category 属性
                     })
                 },
                 update: function () {
@@ -42,6 +42,7 @@
                         return;
                     var url = this.uri;
                     axios.put(url, vue.bean).then(function (response) {
+                        //更新成功后，跳转到产品列表页面
                         location.href = vue.listURL + "?cid=" + vue.category.id;
                     });
                 }
@@ -64,6 +65,8 @@
         <div class="panel-body">
             <table class="editTable">
                 <tr>
+                    <!-- 产品名称输入框，绑定了 bean.name 属性，当输入框内容发生变化时，bean.name 也会发生变化 -->
+                    <!-- 当用户按下回车键时，调用 update 方法 -->
                     <td>产品名称</td>
                     <td><input @keyup.enter="update" v-model.trim="bean.name" type="text" class="form-control"></td>
                 </tr>
@@ -89,6 +92,8 @@
                 </tr>
                 <tr class="submitTR">
                     <td colspan="2" align="center">
+                        <!-- 隐藏域，用于存储产品的 ID -->
+                        <!-- 当用户点击提交按钮时，调用 update 方法 -->
                         <input type="hidden" name="id" v-model.trim="bean.id">
                         <a href="#nowhere" class="btn btn-success" @click="update">提 交</a>
                     </td>

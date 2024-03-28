@@ -29,6 +29,7 @@ public class PropertyService {
 
     @CacheEvict(allEntries = true)
     public void add(Property bean) {
+
         propertyDAO.save(bean);
     }
 
@@ -55,13 +56,15 @@ public class PropertyService {
 
     @Cacheable(key = "'properties-cid-'+#p0+'-page-'+#p1 + '-' + #p2 ")
     public Page4Navigator<Property> list(int cid, int start, int size, int navigatePages) {
+        //获取到对应的Category对象
         Category category = categoryService.get(cid);
-
+        //创建一个Sort对象，表示通过id倒排序
         Sort sort = new Sort(Sort.Direction.DESC, "id");
+        //这个对象包含了分页的信息，比如当前页码start和每页显示的数量size
         Pageable pageable = new PageRequest(start, size, sort);
-
+        //这个方法会根据分类和分页信息从数据库中查询属性列表
         Page<Property> pageFromJPA = propertyDAO.findByCategory(category, pageable);
-
+        //这个封装类提供了一些额外的分页导航功能
         return new Page4Navigator<>(pageFromJPA, navigatePages);
 
 
